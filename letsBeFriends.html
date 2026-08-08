@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Acaa</title>
+<style>
+  :root {
+    --paper: #f7ecd9;
+    --paper-dark: #e8d5b5;
+    --ink: #3a2e28;
+    --wax: #a83a3a;
+    --wax-dark: #7c2828;
+    --gold: #c9a24b;
+    --sage: #6f8c6a;
+    --sage-dark: #4f6b4a;
+    --shadow: rgba(58, 46, 40, 0.25);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: radial-gradient(ellipse at top, #efe0c2, #d8c199 65%, #c3ab7c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* floating decorative dots */
+  .bg-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(168, 58, 58, 0.08);
+    pointer-events: none;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .scene.active {
+    display: flex;
+  }
+
+  /* ---------- SCENE 1: ENVELOPE ---------- */
+
+  .envelope-wrap {
+    position: relative;
+    width: min(340px, 82vw);
+    aspect-ratio: 3 / 2;
+    cursor: pointer;
+    filter: drop-shadow(0 18px 30px var(--shadow));
+    transition: transform 0.3s ease;
+  }
+
+  .envelope-wrap:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .envelope-wrap.opened {
+    pointer-events: none;
+  }
+
+  .env-back {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-dark);
+    border-radius: 6px;
+    border: 1px solid #cbb27f;
+  }
+
+  .env-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 55%;
+    background: linear-gradient(135deg, #e9d6b0, #d9bd85);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 0.9s cubic-bezier(.6,-0.2,.3,1.4);
+    z-index: 3;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .envelope-wrap.opened .env-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+
+  .env-pocket-left, .env-pocket-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--paper-dark);
+    z-index: 2;
+  }
+  .env-pocket-left {
+    left: 0;
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+  .env-pocket-right {
+    right: 0;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  .wax-seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 58px;
+    height: 58px;
+    background: radial-gradient(circle at 35% 30%, var(--wax) 0%, var(--wax-dark) 75%);
+    border-radius: 50%;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f2d9a8;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 -3px 6px rgba(0,0,0,0.25);
+    transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+  }
+
+  .envelope-wrap.opened .wax-seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  .letter-inside {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 10%;
+    height: 78%;
+    background: var(--paper);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 0;
+    transform: translateY(10%);
+    transition: transform 0.7s ease 0.5s;
+  }
+
+  .envelope-wrap.opened .letter-inside {
+    transform: translateY(-115%);
+  }
+
+  .hint-text {
+    margin-top: 28px;
+    color: var(--ink);
+    opacity: 0.75;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    font-style: italic;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+  }
+
+  /* ---------- SCENE 2: QUESTION ---------- */
+
+  .card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 44px 36px;
+    max-width: 480px;
+    width: min(480px, 88vw);
+    box-shadow: 0 20px 50px var(--shadow);
+    text-align: center;
+    position: relative;
+    border: 1px solid #ddc79b;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed #cbb27f;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--wax);
+    margin-bottom: 14px;
+    font-family: 'Trebuchet MS', sans-serif;
+  }
+
+  .headline {
+    font-size: clamp(22px, 5vw, 30px);
+    color: var(--ink);
+    line-height: 1.35;
+    margin: 0 0 8px;
+  }
+
+  .headline .name {
+    color: var(--wax-dark);
+  }
+
+  .subtext {
+    font-size: 14px;
+    color: #6b5c4e;
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+
+  .choice-row {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    min-height: 60px;
+  }
+
+  .btn {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 16px;
+    padding: 13px 34px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-yes {
+    background: var(--sage);
+    color: #fdf9ee;
+    box-shadow: 0 6px 14px rgba(79, 107, 74, 0.35);
+  }
+
+  .btn-yes.dodging {
+    position: fixed;
+    z-index: 50;
+  }
+
+  .btn-no {
+    background: transparent;
+    color: var(--wax-dark);
+    border: 2px solid var(--wax);
+  }
+  .btn-no:hover {
+    background: rgba(168, 58, 58, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .no-caption {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #9a8a76;
+    min-height: 16px;
+  }
+
+  /* ---------- SCENE 3: DATE PICKER ---------- */
+
+  .date-card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 40px 34px;
+    max-width: 440px;
+    width: min(440px, 88vw);
+    box-shadow: 0 20px 50px var(--shadow);
+    text-align: center;
+    border: 1px solid #ddc79b;
+  }
+
+  .date-card h2 {
+    color: var(--ink);
+    font-size: clamp(20px, 4.5vw, 26px);
+    margin: 0 0 6px;
+  }
+
+  .date-card p.sub {
+    color: #6b5c4e;
+    font-size: 13px;
+    font-style: italic;
+    margin: 0 0 26px;
+  }
+
+  input[type="date"] {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #cbb27f;
+    background: #fffdf7;
+    color: var(--ink);
+    width: 100%;
+    margin-bottom: 22px;
+  }
+
+  .btn-confirm {
+    background: var(--wax);
+    color: #fdf1e2;
+    box-shadow: 0 6px 14px rgba(168, 58, 58, 0.35);
+    width: 100%;
+    font-size: 16px;
+    padding: 13px 0;
+  }
+  .btn-confirm:hover {
+    background: var(--wax-dark);
+    transform: translateY(-2px);
+  }
+
+  /* ---------- SCENE 4: FINAL ---------- */
+
+  .final-card {
+    text-align: center;
+    padding: 20px;
+    max-width: 520px;
+    position: relative;
+  }
+
+  .dino-sticker {
+    position: absolute;
+    top: -6px;
+    right: 4px;
+    width: 76px;
+    height: 76px;
+    transform: rotate(-14deg);
+    filter: drop-shadow(0 6px 10px rgba(58, 46, 40, 0.3));
+    animation: stickerWiggle 3s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  @keyframes stickerWiggle {
+    0%, 100% { transform: rotate(-14deg); }
+    50%      { transform: rotate(-6deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dino-sticker { animation: none; }
+  }
+
+  .dino-wrap {
+    width: 160px;
+    height: 150px;
+    margin: 0 auto 6px;
+  }
+
+  .dino {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .dino-body-group {
+    animation: dinoBounce 1.6s ease-in-out infinite;
+    transform-origin: 95px 140px;
+  }
+
+  @keyframes dinoBounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25%      { transform: translateY(-6px) rotate(-1.5deg); }
+    50%      { transform: translateY(0) rotate(0deg); }
+    75%      { transform: translateY(-3px) rotate(1.5deg); }
+  }
+
+  .dino-tail {
+    animation: dinoTailWag 1.6s ease-in-out infinite;
+    transform-origin: 45px 108px;
+  }
+
+  @keyframes dinoTailWag {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(8deg); }
+  }
+
+  .dino-head-group {
+    animation: dinoNod 1.6s ease-in-out infinite;
+    transform-origin: 140px 85px;
+  }
+
+  @keyframes dinoNod {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(-4deg); }
+  }
+
+  .dino-eye {
+    animation: dinoBlink 3.2s ease-in-out infinite;
+    transform-origin: 155px 76px;
+  }
+
+  @keyframes dinoBlink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(0.1); }
+  }
+
+  .dino-leg-back {
+    animation: dinoLegBack 0.8s ease-in-out infinite;
+    transform-origin: 57px 128px;
+  }
+  .dino-leg-front {
+    animation: dinoLegFront 0.8s ease-in-out infinite;
+    transform-origin: 113px 130px;
+  }
+
+  @keyframes dinoLegBack {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(-8deg); }
+  }
+  @keyframes dinoLegFront {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(8deg); }
+  }
+
+  .dino-shadow {
+    fill: rgba(58, 46, 40, 0.15);
+    animation: dinoShadow 1.6s ease-in-out infinite;
+    transform-origin: 95px 168px;
+  }
+
+  @keyframes dinoShadow {
+    0%, 100% { transform: scale(1); }
+    25%      { transform: scale(0.85); }
+    50%      { transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dino-body-group, .dino-tail, .dino-head-group,
+    .dino-eye, .dino-leg-back, .dino-leg-front, .dino-shadow {
+      animation: none;
+    }
+  }
+
+  .final-emoji {
+    font-size: 56px;
+    margin-bottom: 10px;
+    animation: floatUp 2.4s ease-in-out infinite;
+  }
+
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .final-card h2 {
+    color: var(--ink);
+    font-size: clamp(24px, 6vw, 34px);
+    margin: 0 0 10px;
+  }
+
+  .final-card .final-date {
+    color: var(--wax-dark);
+    font-weight: bold;
+  }
+
+  .final-card p {
+    color: #5c4d40;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* confetti */
+  .confetti {
+    position: fixed;
+    top: -10px;
+    width: 8px;
+    height: 14px;
+    opacity: 0.9;
+    pointer-events: none;
+    animation: fall linear forwards;
+    z-index: 5;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(110vh) rotate(540deg);
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-no { transition: none; }
+    .final-emoji { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- SCENE 1: ENVELOPE -->
+  <div class="scene active" id="scene-envelope">
+    <div class="envelope-wrap" id="envelope" onclick="openEnvelope()">
+      <div class="letter-inside"></div>
+      <div class="env-back"></div>
+      <div class="env-pocket-left"></div>
+      <div class="env-pocket-right"></div>
+      <div class="env-flap"></div>
+      <div class="wax-seal">R</div>
+    </div>
+    <div class="hint-text">Ketuk amplopnya ✉️</div>
+  </div>
+
+  <!-- SCENE 2: QUESTION -->
+  <div class="scene" id="scene-question">
+    <div class="card">
+      <h1 class="headline">Hello <span class="name">ACAAA</span>,<br>Let's Be Friends?</h1>
+      <div class="choice-row">
+        <button class="btn btn-yes" id="yesBtn" onmouseenter="dodge(event)" onclick="dodge(event)" ontouchstart="dodge(event)">Ya</button>
+        <button class="btn btn-no" id="noBtn" onclick="goTo('scene-goodbye')">Tidak</button>
+      </div>
+      <div class="no-caption" id="noCaption"></div>
+    </div>
+  </div>
+
+  <!-- SCENE 2b: GOODBYE -->
+  <div class="scene" id="scene-goodbye">
+    <div class="final-card">
+      <div class="final-emoji">👋</div>
+      <h2>Baiklah dikss</h2>
+      
+    </div>
+  </div>
+
+  <!-- SCENE 3: DATE PICKER -->
+  <div class="scene" id="scene-date">
+    <div class="date-card">
+      <h2>Yeay! 🎉</h2>
+      <p class="sub">Kalau begitu, kita mulai lagi dari tanggal berapa?</p>
+      <input type="date" id="jadianDate">
+      <button class="btn btn-confirm" onclick="confirmDate()">Fix, Jadian Lagi!</button>
+    </div>
+  </div>
+
+  <!-- SCENE 4: FINAL -->
+  <div class="scene" id="scene-final">
+    <div class="final-card">
+      <svg class="dino-sticker" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#fffdf7" stroke="#f4c93e" stroke-width="3"/>
+        <g transform="translate(12, 16) scale(0.62)">
+          <path d="M20 92 Q4 86 3 68 Q2 56 14 60 Q15 74 34 85 Z" fill="#e8b62f"/>
+          <path d="M55 20 L61 8 L67 20 Z" fill="#e8b62f"/>
+          <path d="M68 22 L74 10 L80 22 Z" fill="#e8b62f"/>
+          <path d="M80 27 L86 16 L92 27 Z" fill="#e8b62f"/>
+          <path d="M14 96
+                   C6 96 2 80 9 68
+                   C4 56 11 40 32 36
+                   C36 27 48 21 63 23
+                   C82 22 100 32 102 52
+                   C110 55 113 66 107 73
+                   C110 82 103 90 94 90
+                   C92 100 79 104 65 102
+                   C50 106 22 104 14 96 Z"
+                fill="#f4c93e"/>
+          <path d="M30 72 C34 88 56 94 70 88 C64 96 42 98 30 86 Z" fill="#fbe28a"/>
+          <circle cx="88" cy="42" r="4.5" fill="#3a2e28"/>
+          <circle cx="86.6" cy="40.6" r="1.2" fill="#fff"/>
+          <circle cx="82" cy="52" r="4" fill="#f4a3a3" opacity="0.6"/>
+          <path d="M80 56 Q88 61 94 55" stroke="#c98a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <div class="dino-wrap">
+        <svg class="dino" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+          <ellipse class="dino-shadow" cx="95" cy="168" rx="55" ry="8"/>
+          <g class="dino-body-group">
+            <!-- tail -->
+            <path class="dino-tail" d="M40 120 Q10 110 8 90 Q6 75 20 78 Q22 95 45 108 Z" fill="#f4c93e"/>
+            <!-- back spikes -->
+            <path d="M95 40 L102 25 L109 40 Z" fill="#e8b62f"/>
+            <path d="M112 42 L119 27 L126 42 Z" fill="#e8b62f"/>
+            <path d="M128 48 L135 34 L141 48 Z" fill="#e8b62f"/>
+            <!-- body -->
+            <path d="M35 130
+                     C25 130 20 110 28 95
+                     C22 80 30 60 55 55
+                     C60 45 75 38 95 40
+                     C120 38 145 50 148 75
+                     C158 78 162 92 155 100
+                     C158 112 150 122 138 122
+                     C135 135 118 140 100 138
+                     C80 142 45 140 35 130 Z"
+                  fill="#f4c93e"/>
+            <!-- belly -->
+            <path d="M55 100 C60 122 90 130 108 122 C100 132 70 134 55 118 Z" fill="#fbe28a"/>
+            <!-- legs -->
+            <path class="dino-leg dino-leg-back" d="M55 128 L50 150 L64 150 L60 128 Z" fill="#e8b62f"/>
+            <path class="dino-leg dino-leg-front" d="M110 130 L106 152 L120 152 L118 130 Z" fill="#e8b62f"/>
+            <!-- head -->
+            <g class="dino-head-group">
+              <path d="M138 58 C158 55 172 68 170 85 C169 98 158 104 145 102
+                       C150 92 148 78 138 70 Z" fill="#f4c93e"/>
+              <!-- eye -->
+              <circle class="dino-eye" cx="155" cy="76" r="5" fill="#3a2e28"/>
+              <circle cx="153.3" cy="74.3" r="1.4" fill="#fff"/>
+              <!-- cheek blush -->
+              <circle cx="150" cy="88" r="5" fill="#f4a3a3" opacity="0.6"/>
+              <!-- smile -->
+              <path d="M148 92 Q158 98 166 90" stroke="#c98a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <h2>Terima kasih, Rima.</h2>
+      <p>Mulai <span class="final-date" id="finalDateText"></span>,<br>
+      kita coba lagi, pelan-pelan, tapi sungguh-sungguh.<br>
+      Aku janji akan lebih baik dari sebelumnya.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function openEnvelope() {
+  const env = document.getElementById('envelope');
+  if (env.classList.contains('opened')) return;
+  env.classList.add('opened');
+  document.querySelector('.hint-text').style.opacity = '0';
+  setTimeout(() => {
+    goTo('scene-question');
+  }, 1300);
+}
+
+function goTo(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+const dodgeLines = [
+  "Eits 😳",
+  "Eitsssss",
+  "Eiiitttsssss",
+  "Eitssss mwhehe",
+  "MWHEEHEH🙈",
+  "mwHEHEHEHEHEHEHEHEH?"
+];
+let dodgeIndex = 0;
+
+function rectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2, gap) {
+  return !(
+    x1 + w1 + gap < x2 ||
+    x2 + w2 + gap < x1 ||
+    y1 + h1 + gap < y2 ||
+    y2 + h2 + gap < y1
+  );
+}
+
+function dodge(e) {
+  e.preventDefault();
+  const btn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const caption = document.getElementById('noCaption');
+
+  const currentRect = btn.getBoundingClientRect();
+
+  if (!btn.classList.contains('dodging')) {
+   
+    btn.style.left = currentRect.left + 'px';
+    btn.style.top = currentRect.top + 'px';
+    btn.classList.add('dodging');
+  }
+
+  const w = currentRect.width;
+  const h = currentRect.height;
+  const noRect = noBtn.getBoundingClientRect();
+
+  const maxX = window.innerWidth - w - 16;
+  const maxY = window.innerHeight - h - 16;
+  const gap = 24;
+
+  let newX, newY, tries = 0;
+  do {
+    newX = Math.max(16, Math.random() * maxX);
+    newY = Math.max(16, Math.random() * maxY);
+    tries++;
+  } while (
+    rectsOverlap(newX, newY, w, h, noRect.left, noRect.top, noRect.width, noRect.height, gap) &&
+    tries < 30
+  );
+
+  btn.style.left = newX + 'px';
+  btn.style.top = newY + 'px';
+
+  caption.textContent = dodgeLines[dodgeIndex % dodgeLines.length];
+  dodgeIndex++;
+}
+
+function confirmDate() {
+  const val = document.getElementById('jadianDate').value;
+  if (!val) {
+    alert('Pilih tanggalnya dulu ya 🥺');
+    return;
+  }
+  const dateObj = new Date(val + 'T00:00:00');
+  const formatted = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('finalDateText').textContent = formatted;
+  goTo('scene-final');
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#a83a3a', '#c9a24b', '#6f8c6a', '#e8d5b5', '#7c2828'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 40);
+  }
+}
+</script>
+
+</body>
+</html>
